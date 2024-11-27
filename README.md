@@ -12,3 +12,12 @@ Para instalar as dependências necessárias, execute o seguinte comando:
 
 ```sh
 npm install
+```
+
+## Execução do projeto
+
+Para executar o projeto, execute o seguinte comando:
+
+```sh
+npm run test
+```
