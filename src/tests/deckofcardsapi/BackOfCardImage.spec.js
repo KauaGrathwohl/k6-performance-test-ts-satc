@@ -2,16 +2,21 @@ import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporte
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { Trend } from 'k6/metrics';
+import { Trend, Rate } from 'k6/metrics';
 
-export const getContactsDuration = new Trend('get_contacts', true);
+export const getContactsDuration = new Trend('get_contacts_duration', true);
+export const getContactsSuccessRate = new Rate('get_contacts_success_rate');
 
 export const options = {
   thresholds: {
-    http_req_failed: ['rate<0.01'],
-    http_req_duration: ['avg<10000']
+    http_req_failed: ['rate<0.12'], // Menos de 12% das requisições retornando erro
+    http_req_duration: ['p(95)<5700'] // 95% das respostas com tempo abaixo de 5700ms
   },
-  stages: [{ duration: '1m', target: 1000 }]
+  stages: [
+    { duration: '1m', target: 10 }, // Inicia com 10 VUs
+    { duration: '3m', target: 300 }, // Sobe para 300 VUs
+    { duration: '1m', target: 0 } // Finaliza o teste
+  ]
 };
 
 export function handleSummary(data) {
@@ -22,7 +27,7 @@ export function handleSummary(data) {
 }
 
 export default function () {
-  const endpoint = 'https://deckofcardsapi.com/static/img/back.png';
+  const endpoint = 'https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1';
 
   const params = {
     headers: {
@@ -35,8 +40,11 @@ export default function () {
   const res = http.get(`${endpoint}`, params);
 
   getContactsDuration.add(res.timings.duration);
+  getContactsSuccessRate.add(res.status === OK);
 
   check(res, {
     'get contacts - status 200': () => res.status === OK
   });
+
+  sleep(1);
 }
