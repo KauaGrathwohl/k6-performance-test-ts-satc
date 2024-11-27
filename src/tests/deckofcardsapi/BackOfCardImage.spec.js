@@ -13,9 +13,11 @@ export const options = {
     http_req_duration: ['p(95)<5700'] // 95% das respostas com tempo abaixo de 5700ms
   },
   stages: [
-    { duration: '1m', target: 10 }, // Inicia com 10 VUs
-    { duration: '3m', target: 300 }, // Sobe para 300 VUs
-    { duration: '1m', target: 0 } // Finaliza o teste
+    { duration: '1m', target: 10 },
+    { duration: '1m', target: 82 },
+    { duration: '1m', target: 155 },
+    { duration: '1m', target: 225 },
+    { duration: '1m', target: 300 }
   ]
 };
 

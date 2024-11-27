@@ -4,16 +4,13 @@
   "description": "api performance tests with k6",
   "main": "index.js",
   "scripts": {
-    "clean": "rimraf src/output",
-    "create-output-dir": "powershell -Command \"if (!(Test-Path -Path 'src/output')) { New-Item -ItemType Directory -Path 'src/output' }\"",
     "format": "prettier --write \"**/**.[jt]s?(x)\"",
     "verify": "prettier --check \"**/**.[jt]s?(x)\"",
-    "test": "npm run clean && npm run create-output-dir && k6 --vus 10 --duration 10s run src/tests/deckofcardsapi/BackOfCardImage.spec.js",
+    "test": "k6 run --out web-dashboard --address :5666 src/tests/deckofcardsapi/BackOfCardImage.spec.js",
     "ci": "npm run format && npm run verify && npm run test"
   },
   "devDependencies": {
     "k6": "^0.0.0",
-    "prettier": "^3.3.3",
-    "rimraf": "^6.0.1"
+    "prettier": "^3.3.3"
   }
 }
